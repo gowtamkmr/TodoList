@@ -1,0 +1,63 @@
+﻿@model IEnumerable<TodoList.Models.ToDo>
+
+
+
+    <script type="text/javascript">
+    $(document).ready(function () {
+        $("#addToDo").click(function () {
+            $('#successMsg').hide();
+            if ($('#focusedInput').val() != '') {
+                $.ajax({
+                    url: '/Home/CreateToDo',
+                    type: 'POST',
+                    data: { todoItem: $("#focusedInput").val() },
+                    success: function(result) {
+                        $("#todoList").append('<li class="list-group-item">' + result.taskName + '</li>');
+                        $('#focusedInput').val('')
+                        $('#successMsg').show();
+
+                    },
+                    error: function () { alert('Failed to add item'); }
+                });
+            }
+            else {
+                $('#focusedInput').after('<span style="color:red">Enter a To-Do item</span>');
+            }
+        });
+        
+        $('#focusedInput').keypress(function () {
+            $(this).next().remove();
+            $('#successMsg').hide();
+        })
+    });
+    </script>
+
+
+<div class="jumbotron">
+    <h2>To do:</h2>
+    <span  id="successMsg" class="alert-success" style="display:none">Item Added Successfully</span>
+    <ul id="todoList" class="list-group">
+        @foreach (var item in Model)
+        {
+            <li class="list-group-item">@item.TaskName</li>
+        }
+
+    </ul>
+
+    <div class="container">
+        <form id="input_form" class="form-horizontal">
+            <div class="form-group">
+                <label class="col-xs-2 control-label">Task</label>
+                <div class="col-xs-10" style="padding-right:0px">
+                    <input class="form-control" id="focusedInput" type="text" placeholder="What do you need to do?">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <button  type="button" id="addToDo" style="float:right" class="btn btn-primary">Save Item</button>
+            </div>
+        </form>
+
+    </div>
+
+</div>
